@@ -2,7 +2,7 @@
 ## dependencies
   * [apptainer](https://apptainer.org)
 ## help
-`curl -L -O https://github.com/Phylloxera/PEIV13-dev/releases/download/PEIV13-dev/peiv13cont.tgz`
+`curl -L -O https://github.com/Phylloxera/PEIV13-dev/releases/download/v0.0.1/peiv13cont.tgz`
 
 `tar -xzvf peiv13cont.tgz`
 
