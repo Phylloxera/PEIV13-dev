@@ -345,7 +345,7 @@ raw2seqtab <- function(
     "ta might have too many errors if a maxerror of 5 is still insufficient.")  
   denoisecomp <- (sum(track[, 2]) - minDenois) / sum(track[, 2])
   mergecomp <- (minDenois - sum(track[, 5])) / minDenois
-  if (mergecomp > 0.5) warning(
+  if (denoisecomp > 0.5) warning(
     "A majority of quality filtered reads from run ", r, " were removed by den",
     "oising!\nYou might consider relaxing (increasing) the PEIV13 controlfile ",
     "forward and reversemaxerror parameters used in filterAndTrim, however, yo",
@@ -386,8 +386,8 @@ if (length(r) == 1L) {s <- readRDS(seqtabs)} else {seed <- 100; message(
 #matrix. was not being applied correctly. 
 #MUST only be run if any(rowSums(s) < 10000)
 rs10k <- function(s) {rs <- which(rowSums(s) < 10000); warning(
-  "Samples ", names(rs), " will be removed due to sequence depth < 10,000.\nSe",
-  "e doi:10.1093/jas/skab346."); return(rs)}
+  "Samples ", paste(names(rs)), " will be removed due to sequence depth < 10,0",
+  "00.\nSee doi:10.1093/jas/skab346."); return(rs)}
 #e.g. rs10k(st.bac)
 
 #rsSpecify function for debugging as a drop-in replacement for rs10k.
