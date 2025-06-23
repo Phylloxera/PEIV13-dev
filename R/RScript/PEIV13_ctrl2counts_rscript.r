@@ -1,9 +1,7 @@
 #!/usr/bin/env Rscript
 
-#The PEIV13_ctrl2counts_rscript.R Rscript file. intended to be run via 
-#system() in RStudio or inside of the PEIV13 apptainer container
-#tested mac/pc but too much data for use with mac (onedrive problem or system?)
-#not yet tested linux.
+#The PEIV13_ctrl2counts_rscript.R Rscript file. Tested via system() in RStudio, 
+#inside of the peiv13cont apptainer container, and via Rscript
 
 #commandArgs() test
 if (length(commandArgs(trailingOnly = T)) != 1) {
@@ -18,8 +16,7 @@ source(paste0(Rsrcdir, "/PEIV13funcs.R")) #get funcs
 #trailingOnly TRUE to get controlfile path from commandArgs()
 uservars <- getc(commandArgs(trailingOnly = T)[1])
 
-#check files/folders & packages
-checkfs(); checkenv()
+checkfs(); checkenv() #check files/folders & packages
 
 #get & order metadata md. check assignTaxonomy files/parameters. set up results
 check_taxdb()
@@ -34,8 +31,7 @@ fns <- sort(list.files(pattern2string("inputfolder"), full.names = T,
 fnRs <- fns[grepl("R2", fns)]; fnFs <- unique(batch_ilike_subset_vec(fnFs, md[
   , "library"])); fnRs <- unique(batch_ilike_subset_vec(fnRs, md[, "library"]))
 
-#subset md
-md <- subset_md()
+md <- subset_md() #subset md
 
 #extract trunc,maxerror,trimLeft,run variables from uservars
 varMessages(); forwardmaxerror <- dada2var_from_ctrl("forwardmaxerror")
@@ -46,45 +42,37 @@ forwardtrimLeft <- dada2var_from_ctrl("forwardtrimLeft")
 reversetrimLeft <- dada2var_from_ctrl("reversetrimLeft")
 runs <- unique(md[, "run"]); cat(length(runs), "runs found in metadata\n")
 
-#check environment variables
-PEIV13varcheck()
+#check environment variables (allow for optional raw2seqtab variables)
+pl <- as.character(pattern2string("pool")); if (length(pl) > 0) {
+  #For a single optional variable, pl is character vector length 1.
+  #For multiple optional variables, this might need to be a list.
+  pl <- PEIV13varcheck()} else {remove(pl); PEIV13varcheck()}
 
 #split libraries by runs. get ready to run dada2.
 FileList <- split(md["library"], md[, "run"]); suppressPackageStartupMessages(
   library(dada2))
 
-#run dada2 on each run in loop.
-for (r in runs) {raw2seqtab()} #did not complete on mac. try connected to
-#screen downstairs!
+#run dada2 on each run (optional variable aware)
+if (exists('pl')) {for (r in runs) {raw2seqtab()} 
+} else {for (r in runs) {raw2seqtab()}}
 
-#merge sequence tables. test updated with subsetted md/runs
-st.all <- multiseqtab()
+st.all <- multiseqtab() #merge sequence tables
 
-#merge repeat rows. ""
-st.mr <- mat_sum_repeat()
+st.mr <- mat_sum_repeat() #merge repeat rows
 
-#remove chimeras. ""
-st.chim <- Bn()
+st.chim <- Bn(); taxa <- aT() #remove chimeras, assign taxonomy
 
-#assign taxonomy. ""
-taxa <- aT()
-
-#subset taxa and st.bac (tm if necessary)
+#subset taxa and remove nonbacterial sequences
+#(match to track reads summaries if necessary)
 st.bac <- rmBac(); taxa.bac <- rmBac2()
 
-#save st.bac, taxa.bac
+#save files (written as rds not csv for container version 1.1)
 message("Writing sequence table and taxonomy table")
-write.csv(st.bac, "results/SequenceTable.csv")
-write.csv(taxa.bac, "results/TaxaTable.csv")
+saveRDS(st.bac, "results/SequenceTable.rds")
+saveRDS(taxa.bac, "results/TaxaTable.rds")
 
-#make a phyloseq (tree-less) and save
-make_ps()
+make_ps() #make a phyloseq (tree-less) and save
 
-#unload dada2
-pkg <- "package:dada2"; detach(pkg, character.only = T)
+pkg <- "package:dada2"; detach(pkg, character.only = T) #unload dada2
 
-#cleanup intermediate
-rm_peiv13_int()
-
-#i can add in fasttree2 and ribovore (others?) BUT only inside container and
-#with separate rscripts
+rm_peiv13_int() #cleanup intermediate files/folders
