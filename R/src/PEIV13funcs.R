@@ -38,8 +38,8 @@ checkenv <- function() {if (!("dada2" %in% installed.packages())) stop(
 #test results
 check_mdat <- function (m = md) {if ("library" %in% colnames(
   m) && "run" %in% colnames(m)) {cat(
-    "Required columns were found in metadata!\n")
-} else {stop("required columns not found in metadata")}
+    "Required columns were found in metadata!\n")} else {stop(
+      "required columns not found in metadata")}
   #ENFORCE unique(<library column>)
   if (nrow(m) > length(unique(m[, "library"]))) {stop(
     "library column MUST be unique for PEIV13")
@@ -120,7 +120,7 @@ check_taxdb <- function(uv = uservars) {message(
 #e.g., check_taxdb()
 
 #setup_peiv13_results function takes uservars.
-#generally "ing" indicates message()
+#message() is more about what the results might mean
 setup_peiv13_results <- function(uv = uservars) {ow <- as.logical(
   pattern2string("overwrite")); if (is.na(ow)) stop(
     "overwrite needs to be TRUE or FALSE")
@@ -190,7 +190,7 @@ PEIV13varcheck <- function() {if (is.integer(reversetrimLeft) == F) stop(
     forwardtrunc), names(reversetrunc), as.character(runs)) == T) {cat(
       "User supplied dada2 trunc and error variables match!\n")
     } else {stop("check that error and trunc controlfile labels match your met",
-             "adata run column")}
+                 "adata run column")}
   #new container V 1.1 text for new ... variables that can be passed to
   #raw2seqtab(). if add a second one, pl will need to be returned as a list
   pl <- as.character(pattern2string("pool")); if (length(pl) > 0) {
@@ -273,7 +273,7 @@ out <- filterAndTrim(Fs, filtFs, Rs, filtRs, truncLen = truncspec, trimLeft = c(
 end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours")
 cat("filterAndTrim for run", r, "completed in", paste0(elapsed_time, "\n"))
-cat("Learning errors for run", paste0(r, "!\n)); beg_time <- Sys.time()
+cat("Learning errors for run", paste0(r, "!\n")); beg_time <- Sys.time()
 #learnErrors()
 errF <- learnErrors(
   filtFs, nbases = 1e8, multithread = multithread_val, randomize = T)
@@ -295,7 +295,8 @@ dadaRs <- dada(
 end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours"); cat(
     "dada for run", r, "completed in", paste0(elapsed_time, "!\n")); cat(
-      "Merging pairs for run", r); beg_time <- Sys.time() #mergePairs()
+      "Merging pairs for run", paste0(r, "!\n")); beg_time <- Sys.time() 
+#mergePairs()
 mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs)
 #additional || nrow(mergers[[1]]) == 0L category needed windows.
 if(isTRUE(nrow(mergers) == 0L || nrow(mergers[[1]]) == 0L)) { 
@@ -312,7 +313,7 @@ end_time_s <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_s, time2 = beg_time, units = "secs")), 2), " Seconds")
 cat("mergePairs for run", r, "completed in", paste0(elapsed_time, "!\n"))
 cat("Making sequence table and initiating read-loss tracking for run", paste0(
-  r, "!\n") #makeSequenceTable()
+  r, "!\n")) #makeSequenceTable()
 beg_time <- Sys.time(); seqtab <- makeSequenceTable(mergers)
 ct_filt400 <- sum(nchar(colnames(seqtab)) < 400); if (ct_filt400 > 0) {
   message("--Removing ", ct_filt400, " variants shorter than 400.\nSee doi:10.",
