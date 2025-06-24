@@ -2,10 +2,9 @@
 
 #getc takes controlfile path as character string and returns a dataframe
 #from the file at that path
-getc <- function(cp) {if (!file.exists(cp)) stop(cp, " not found") #this is
-  #an informative AND exiting error
+getc <- function(cp) {if (!file.exists(cp)) stop(cp, ",\nnot found")
   uv <- read.csv(cp, header = F); if (!is.list(uv)) stop(
-    cp, " not properly coerced to a list"); return(uv)}
+    cp, ",\nnot properly coerced to a list"); return(uv)}
 #e.g., uservars <- getcf("ctrl_file_path")
 
 #pattern2string(pattern, uv = uservars) takes a patern string and a peiv13
@@ -16,10 +15,10 @@ pattern2string <- function(pattern, uv = uservars) {
 
 #checkfs takes uv (default uservars) and performs confirms existence of inputs
 checkfs <- function(uv = uservars) {mf <- pattern2string("metadatafile")
-if (!file.exists(mf)) stop(mf, "\nnot found"); rawfol <- pattern2string(
-  "inputfolder"); if (!dir.exists(rawfol)) stop(rawfol, "\nnot found")
+if (!file.exists(mf)) stop(mf, ",\nnot found"); rawfol <- pattern2string(
+  "inputfolder"); if (!dir.exists(rawfol)) stop(rawfol, ",\nnot found")
 dbf <- pattern2string("databasefile"); if (!file.exists(dbf)) stop(
-  dbf, "\nnot found")}
+  dbf, ",\nnot found")}
   #never reproduced or found source of env: Rscript\r: No such file or directory
 #e.g., checkfs()
 
@@ -38,18 +37,19 @@ checkenv <- function() {if (!("dada2" %in% installed.packages())) stop(
 #check_mdat function takes PEIV13 metadata data.frame default = md and prints 
 #test results
 check_mdat <- function (m = md) {if ("library" %in% colnames(
-  m) && "run" %in% colnames(m)) {cat("required columns found in metadata\n")
+  m) && "run" %in% colnames(m)) {cat(
+    "Required columns were found in metadata!\n")
 } else {stop("required columns not found in metadata")}
-  #MUST ENFORCE UNIQUENESS OF library COLUMN FOR FileList TO WORK.
+  #ENFORCE unique(<library column>)
   if (nrow(m) > length(unique(m[, "library"]))) {stop(
     "library column MUST be unique for PEIV13")
 	#set conditions for (optional) repeat column
 	} else if ("repeat." %in% colnames(m) && length(unique(m[
       , "repeat."])) < nrow(m)) {cat(length(unique(m[
         , "repeat."])), "samples from", nrow(
-          m), "rows accounting for repeats in metadata.\n"); message(
-            "per-variant sequence counts will be summed for repeats")
-    } else {cat("no technical replicates in metadata\n")}}
+          m), "rows accounting for repeats were found in metadata!\n"); message(
+            "--Per-variant sequence counts will be summed for repeats")
+    } else {cat("No technical replicates in metadata!\n")}}
 #e.g., check_mdat()
 
 #dada2var_from_ctrl function for PEIV13 extracts a named integer based on 
@@ -75,24 +75,24 @@ subset_md <- function(m = md, fF = fnFs, fR = fnRs) {unused <- unused_patterns(
 
 #varMessages function lacks arguments. just posts messages
 varMessages <- function() {message(
-  "Reading maxerror parameters from controlfile.\nIf you want to speed up down",
-  "stream computation, consider tightening (decreasing)\nthese.\nIf too few re",
-  "ads are passing the filter, consider relaxing these, perhaps\nespecially re",
-  "versemaxerror and reducing the trunc parameters to remove low\nquality tail",
-  "s.\nRemember though, when choosing trunc you must maintain overlap after tr",
-  "uncation\nin order to merge R1 and R2 pairs.")
+  "--Reading maxerror parameters from controlfile.  If you want to speed up\nd",
+  "ownstream computation, consider tightening (decreasing) these.  If too few",
+  "\nreads are passing the filter, consider relaxing these, perhaps especially",
+  "\nreversemaxerror and reducing the trunc parameters to remove low quality t",
+  "ails.\nRemember though, when choosing trunc you must maintain overlap after",
+  " truncation in order to merge R1 and R2 pairs.")
   message(
-  "Reading forwardtrunc and reversetrunc parameters from controlfile.\nYour re",
-  "ads must still overlap after truncation in order to merge them later!\nWhen",
-  " using a a less-overlapping primer set, like V1-V3, these parameters must b",
-  "e\nlarge enough to maintain 20 + biological-length-variation nucleotides of",
-  " overlap\nbetween them.")
+  "--Reading forwardtrunc and reversetrunc parameters from controlfile.  Your ",
+  "reads\nmust still overlap after truncation in order to merge them later!  W",
+  "hen using a\nless-overlapping primer set, like V1-V3, these parameters must",
+  " be large enough\nto maintain 20 + biological-length-variation nucleotides ",
+  "of overlap between\nthem.")
   message(
-  "Reading trimLeft parameters from controlfile.\nConstant length primers at t",
-  "he start of your reads is a common scenario.\nThe forward and reverse param",
-  "eters will be applied to your R1 and R2 files\nrespectively.\nIf your forwa",
-  "rd primers are in R2, set tryRC to TRUE for assignTaxonomy.\nPlease double-",
-  "check that your primers have been removed by dada2!")}
+  "--Reading trimLeft parameters from controlfile.  Constant length primers at",
+  " the\nstart of your reads is a common scenario.  The forward and reverse pa",
+  "rameters\nwill be applied to your R1 and R2 files respectively.  If your fo",
+  "rward primers\nare in R2, set tryRC to TRUE for assignTaxonomy.  Please dou",
+  "ble-check that your\nprimers have been removed by dada2!")}
 #e.g., varMessages()
 
 #multieq function for PEIV13 takes 3 or more R objects of the same class and 
@@ -109,7 +109,7 @@ if (all(sapply(list(classes[1:(tcount - 1)]), function(x) x == classes[
 
 #check_taxdb function takes uservars. includes tryRC check
 check_taxdb <- function(uv = uservars) {message(
-  "checking Taxonomy database files/parameters")
+  "--Checking Taxonomy database files/parameters")
   trc <- as.logical(pattern2string("tryRC")); if (is.na(trc)) stop(
     "tryRC needs to be TRUE or FALSE"); d <- pattern2string("databasefile")
   #what happens with below when multiple trailing ';'
@@ -126,14 +126,14 @@ setup_peiv13_results <- function(uv = uservars) {ow <- as.logical(
     "overwrite needs to be TRUE or FALSE")
   #if results exists and overwrite is FALSE exit
 if (dir.exists("results") && ow == F) stop(
-  "the PEIV13 results directory ", getwd(),
-  "/results\nwill not be overwritten since overwrite is FALSE")
+  "the PEIV13 results directory,\n", getwd(),
+  "/results,\nwill not be overwritten since overwrite is FALSE")
 #if results exists and overwrite is TRUE delete and recreate else create
 #force = T needed on windows one drive
 if (dir.exists("results") && ow == T) {message(
-  "overwriting ", getwd(), "/results"); unlink(
+  "--Overwriting,\n", getwd(), "/results"); unlink(
   "results", recursive = T, force = T); if (dir.exists("results")) {stop(
-    "the PEIV13 results directory\n", getwd(), "/results\ncould not be overw",
+    "the PEIV13 results directory,\n", getwd(), "/results,\ncould not be overw",
     "ritten")}; dir.create("results"); dir.create("results/filt")
   dir.create("results/seqtab"); dir.create("results/plotErrors")} else {
     message("creating\n", getwd(), "/results"); dir.create("results")
@@ -147,11 +147,11 @@ check_peiv13_results <- function(uv = uservars) {ow <- as.logical(
     "overwrite needs to be TRUE or FALSE")
 #if results does not exist exit
 if (!dir.exists("results")) stop(
-  "the PEIV13 results directory ", getwd(), "/results\ndoes not exist")
+  "the PEIV13 results directory,\n", getwd(), "/results,\ndoes not exist")
 #if seqtab does not exist exit
 if (!dir.exists("results/seqtab")) {stop(
-  "the PEIV13 results/seqtab directory\n", getwd(), 
-  "/results/seqtab\ndoes not exist")}}
+  "the PEIV13 results/seqtab directory,\n", getwd(), 
+  "/results/seqtab,\ndoes not exist")}}
 #e.g., check_peiv13_results()
 
 #the unused_patterns function takes a long vector (subject vector) and a
@@ -188,7 +188,7 @@ PEIV13varcheck <- function() {if (is.integer(reversetrimLeft) == F) stop(
   if (length(reversetrimLeft) > 1) stop("too many reversetrimLeft values found")
   if (multieq(names(forwardmaxerror), names(reversemaxerror), names(
     forwardtrunc), names(reversetrunc), as.character(runs)) == T) {cat(
-      "user supplied dada2 trunc and error variables match\n")
+      "User supplied dada2 trunc and error variables match!\n")
     } else {stop("check that error and trunc controlfile labels match your met",
              "adata run column")}
   #new container V 1.1 text for new ... variables that can be passed to
@@ -196,23 +196,23 @@ PEIV13varcheck <- function() {if (is.integer(reversetrimLeft) == F) stop(
   pl <- as.character(pattern2string("pool")); if (length(pl) > 0) {
     if (pl != "pseudo") pl <- as.logical(casefold(pl, upper = T)); if (is.na(
       pl)) stop('pool needs to be TRUE, FALSE or "pseudo"')} 
-  cat("second check of metadata after comparing file names against library\n")
-  #PEIV13 message
-  check_mdat(); message(
-    "PEIV13 will now run the dada2 pipeline for paired-end bacterial 16s varia", 
-    "ble\nregion 1-3 data.\nError plots will be in results/plotErrors/<directi",
-    "on>_<batch>.pdf showing the\nerror rates for each possible transition (A→",
-    "C, A→G, ...).\nPoints are the observed error rates for each consensus qua",
-    "lity score.\nThe black line shows the estimated error rates after converg",
-    "ence of the machine-\nlearning algorithm.\nThe red line shows the error r",
-    "ates expected under the nominal definition of the\nQ-score.\nIf the estim",
-    "ated error rates (black line) are a good fit to the observed rates\n(poin",
-    "ts) and the error rates drop with increased quality as expected you can\n",
-    "have confidence in the error model.\nExample plots that might justify enf",
-    "orcing monotonicity in the fitted error\nmodel are here: https://github.c",
-    "om/benjjneb/dada2/issues/1156.\nDuring merging, sequences are only output",
-    " if the forward and reverse reads\noverlap by at least 12 bases, and are ",
-    "identical to each other in the overlap\nregion.")
+  cat("Performing second check of metadata after comparing file names against",
+      "library!\n"); check_mdat()
+  message(
+    "--PEIV13 will now run the dada2 pipeline for paired-end bacterial 16s var", 
+    "ble\nregion 1-3 data.  Error plots will be in\nresults/plotErrors/<direct",
+    "ion>_<batch>.pdf showing the error rates for each\npossible transition (A",
+    "→C, A→G, ...).  Points are the observed error rates for\neach consensus q",
+    "uality score.\nThe black line shows the estimated error rates\nafter conv",
+    "ergence of the machine-learning algorithm and the red line shows the\nerr",
+    "or rates expected under the nominal definition of the Q-score.  If the\ne",
+    "stimated error rates (black line) are a good fit to the observed rates(po",
+    "ts)\nand the error rates drop with increased quality as expected you can",
+    "have\nconfidence in the error model.  Example plots that might justify en",
+    "forcing\nmonotonicity in the fitted error model are here:\nhttps://github",
+    ".com/benjjneb/dada2/issues/1156.  During merging, sequences are\nonly out",
+    "put if the forward and reverse reads overlap by at least 12 bases, and\na",
+    "re identical to each other in the overlap region.")
   #new text for container version 1.1. return optional variable. needs to have
   #assignment inside PEIV_ctrl2counts_rscript.r
   if (length(pl) > 0) return(pl)}
@@ -226,23 +226,23 @@ res <- "qualProf"; if (!dir.exists(res)) dir.create(res); if (!dir.exists(
     FL[r]); Fs <- unique(batch_ilike_subset_vec(fnF, s)); Rs <- unique(
       batch_ilike_subset_vec(fnR, s))
 #plot quality profiles
-cat("printing quality profile plots for run", r, "\n")
+cat("Printing quality profile plots for run", r, "!\n")
 beg_time <- Sys.time(); if (length(Fs) == 1) {pqF <- suppressWarnings(
   plotQualityProfile(Fs)); warning(
-    "a single R1 file is available to plot a quality profile")} else if (length(
-      Fs) > 1) {pqF <- suppressWarnings(plotQualityProfile(Fs[1:2]))
+    "a single R1 file is available to plot a quality profile for run ", r)
+} else if (length(Fs) > 1) {pqF <- suppressWarnings(plotQualityProfile(Fs[1:2]))
 } else {stop("no R1 libraries were found from run ", r)}; pdf(file.path(
   res, paste0(r, "_R1.pdf"))); suppressWarnings(print(pqF))
 garbage <- dev.off()
 if (length(Rs) == 1) {pqR <- suppressWarnings(plotQualityProfile(Rs))
-warning("a single R2 file is available to plot a quality profile")
+warning("a single R2 file is available to plot a quality profile for run ", r)
 } else if (length(Rs) > 1) {pqR <- suppressWarnings(plotQualityProfile(Rs[1:2]))
 } else {stop("no R2 libraries were found from run ", r)}; pdf(file.path(
   res, paste0(r, "_R2.pdf"))); suppressWarnings(print(pqR))
 garbage <- dev.off(); end_time_m <- Sys.time(); elapsed_time <- paste0(round(
   as.numeric(difftime(time1 = end_time_m, time2 = beg_time, units = "mins")), 
-    2), " Minutes"); cat("the first 2 read quality profiles for run", r, 
-                         "completed in", elapsed_time, "\n")}
+    2), " Minutes"); cat("The first 2 read quality profiles for run", r, 
+                         "completed in", paste0(elapsed_time, "!\n"))}
 #e.g., raw2pQP()
 
 #raw2seqtab requires 10 default defined variables. As of container version 1.1,
@@ -266,44 +266,42 @@ Fs <- unique(batch_ilike_subset_vec(fnF, s))
 Rs <- unique(batch_ilike_subset_vec(fnR, s))
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
 #filterAndTrim()
-beg_time <- Sys.time(); cat("filterAndTrim for run", r, "\n")
+beg_time <- Sys.time(); cat("Starting filterAndTrim for run", paste0(r, "!\n"))
 out <- filterAndTrim(Fs, filtFs, Rs, filtRs, truncLen = truncspec, trimLeft = c(
   ftl, rtl), maxN = maxN_val, maxEE = maxEE_val, truncQ = truncQ_val, 
   rm.phix = T, compress = T, multithread = multithread_val)
 end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours")
 cat("filterAndTrim for run", r, "completed in", paste0(elapsed_time, "\n"))
-message("learning errors for forward libraries"); beg_time <- Sys.time()
+cat("Learning errors for run", paste0(r, "!\n)); beg_time <- Sys.time()
 #learnErrors()
 errF <- learnErrors(
   filtFs, nbases = 1e8, multithread = multithread_val, randomize = T)
 pEF <- suppressWarnings(plotErrors(errF, nominalQ = T)); pdf(paste0(
   "results/plotErrors/F_", r, ".pdf")); suppressWarnings(print(pEF))
-garbage <- dev.off(); message("learning errors for reverse libraries")
-errR <- learnErrors(
+garbage <- dev.off(); errR <- learnErrors(
   filtRs, nbases = 1e8, multithread = multithread_val, randomize = T)
 pER <- suppressWarnings(plotErrors(errR, nominalQ = T)); pdf(paste0(
   "results/plotErrors/R_", r, ".pdf")); suppressWarnings(print(pER))
 garbage <- dev.off(); end_time_h <- Sys.time(); elapsed_time <- paste0(round(
   as.numeric(difftime(time1 = end_time_h, time2 = beg_time, units = "hours")), 
   2), " Hours"); cat("learnErrors for run", r, "completed in", paste0(
-    elapsed_time, "\n")); if (length(plv) > 0) {} else {plv = F}; message(
-      "running dada for forward libraries with ", plv, " pooling") #dada()
+    elapsed_time, "!\n")); if (length(plv) > 0) {} else {plv = F}; cat(
+      "Running dada for run", r, "with", plv, "pooling!\n") #dada()
 beg_time <- Sys.time(); dadaFs <- dada(
   filtFs, err = errF, multithread = multithread_val, verbose = F, pool = plv)
-message("running dada for reverse libraries with ", plv, " pooling")
 dadaRs <- dada(
   filtRs, err = errR, multithread = multithread_val, verbose = F, pool = plv)
 end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours"); cat(
-    "dada for run", r, "completed in", paste0(elapsed_time, "\n")); message(
-      "Merging pairs"); beg_time <- Sys.time() #mergePairs()
+    "dada for run", r, "completed in", paste0(elapsed_time, "!\n")); cat(
+      "Merging pairs for run", r); beg_time <- Sys.time() #mergePairs()
 mergers <- mergePairs(dadaFs, filtFs, dadaRs, filtRs)
 #additional || nrow(mergers[[1]]) == 0L category needed windows.
 if(isTRUE(nrow(mergers) == 0L || nrow(mergers[[1]]) == 0L)) { 
   #report the column 1 reduction in out
   qualfiltper <- round((sum(out[, 1]) - sum(out[, 2])) / sum(out[, 1]) * 100, 2)
-  stop("There are no remaining sequences in run\n", r, " after mergePairs.\n",
+  stop("There are no remaining sequences in run ", r, " after mergePairs.\n",
        qualfiltper, "% of reads from run ", r, " were removed by quality filte",
        "ring\nIf this is >>50, your PEIV13 controlfile forward and reversetrun",
        "c parameters\nmight be too small.\nLikewise, your maxerror parameters.",
@@ -312,13 +310,13 @@ if(isTRUE(nrow(mergers) == 0L || nrow(mergers[[1]]) == 0L)) {
        "ength-\nvariation nucleotides of overlap between them.")}
 end_time_s <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_s, time2 = beg_time, units = "secs")), 2), " Seconds")
-cat("mergePairs for run", r, "completed in", paste0(elapsed_time, "\n"))
-message("making sequence table and initiating read-loss tracking")
-#makeSequenceTable()
+cat("mergePairs for run", r, "completed in", paste0(elapsed_time, "!\n"))
+cat("Making sequence table and initiating read-loss tracking for run", paste0(
+  r, "!\n") #makeSequenceTable()
 beg_time <- Sys.time(); seqtab <- makeSequenceTable(mergers)
 ct_filt400 <- sum(nchar(colnames(seqtab)) < 400); if (ct_filt400 > 0) {
-  message("Removing ", ct_filt400, " variants shorter than 400.\nSee doi:10.13",
-          "71/journal.pone.0129174")}; seqtab <- seqtab[, nchar(colnames(
+  message("--Removing ", ct_filt400, " variants shorter than 400.\nSee doi:10.",
+          "1371/journal.pone.0129174")}; seqtab <- seqtab[, nchar(colnames(
 	    seqtab)) > 399, drop = F]
 hist <- hist(nchar(getSequences(seqtab)), plot = F); hist[["xname"]] <- paste0(
   "Batch ", r, " Variants"); png(paste0("results/seqtab/hist_", r, ".png"))
@@ -333,18 +331,17 @@ minDenois <- min(sum(track[, 4]), sum(track[, 3]))
 fremain <- round(sum(track[, 2])/sum(track[, 1]) * 100, 2)
 dremain <- round(minDenois/sum(track[, 1]) * 100, 2)
 mremain <- round(sum(track[, 5])/sum(track[, 1]) * 100, 2)
-remain400 <- round(sum(track[, 6])/sum(track[, 1]) * 100, 2); cat(
-  "For run", r, paste0(
-    fremain, "%, ", dremain, "%, ", mremain, "%, ", remain400, "%"), "of input", 
-  "reads remain after\nquality filtering, denoising, merging, and 400 length",
-  "filtering respectively.\nOutside of filtering, there should be no step in",
-  "which a majority of reads are lost.\n"); qualfiltcomp <- (sum(track[
-    , 1]) - sum(track[, 2])) / sum(track[, 1])
+remain400 <- round(sum(track[, 6])/sum(track[, 1]) * 100, 2); message(
+  "--For run ", r, " ", fremain, "%, ", dremain, "%, ", mremain, "%, and",
+  remain400, "% of input reads remain after\nquality filtering, denoising, mer",
+  "ging, and 400 length filtering respectively.\nOutside of filtering, there s",
+  "hould be no step in which a majority of reads are lost.\n")
+qualfiltcomp <- (sum(track[, 1]) - sum(track[, 2])) / sum(track[, 1])
 if (qualfiltcomp > 0.5) warning(
   "A majority of reads from run ", r, " were removed by quality filtering!\nYo",
   "u might consider relaxing (increasing) the PEIV13 controlfile forward and\n",
-  "reversemaxerror parameters used in filterAndTrim, however, your raw data mig",
-  "ht have too many errors if a maxerror of 5 is still insufficient.")  
+  "reversemaxerror parameters used in filterAndTrim, however, your raw data mi",
+  "ght\nhave too many errors if a maxerror of 5 is still insufficient.")  
 denoisecomp <- (sum(track[, 2]) - minDenois) / sum(track[, 2])
 if (denoisecomp > 0.5) warning(
   "A majority of quality filtered reads from run ", r, " were removed by\ndeno",
@@ -367,18 +364,18 @@ rownames(seqtab) <- s; saveRDS(seqtab, paste0(
 elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_s, time2 = beg_time, units = "secs")), 2), " Seconds"); cat(
     "sequence table and initial read-loss tracking for run", r, "completed in",
-    paste0(elapsed_time, "\n"))}
+    paste0(elapsed_time, "!\n"))}
 #e.g., raw2seqtab(plv = "pseudo")
 
 #the multiseqtab() function. binds multiple seqtabs.
 multiseqtab <- function(r = runs) {seqtabs <- character()
 trackfiles <- character(); for (run in r) {run <- as.character(run); seqtabs[
   run] <- c(paste0("results/seqtab/seqtab", run, ".rds")); trackfiles[run] <- c(
-    paste0("results/seqtab/track", run, ".rds"))}; message(
-      "reading track reads"); tracks <- do.call(rbind, lapply(
+    paste0("results/seqtab/track", run, ".rds"))}; cat(
+      "Combining track reads!\n"); tracks <- do.call(rbind, lapply(
         trackfiles, readRDS)); saveRDS(tracks, "results/seqtab/trackmult.rds")
-if (length(r) == 1L) {s <- readRDS(seqtabs)} else {seed <- 100; message(
-  "merging Sequence Tables"); set.seed(seed); s <- mergeSequenceTables(
+if (length(r) == 1L) {s <- readRDS(seqtabs)} else {seed <- 100; cat(
+  "Merging Sequence Tables!\n"); set.seed(seed); s <- mergeSequenceTables(
     tables = seqtabs)}; return(s)}
 #e.g., multiseqtab()
 
@@ -386,16 +383,16 @@ if (length(r) == 1L) {s <- readRDS(seqtabs)} else {seed <- 100; message(
 #index of samples to remove from the sequence count matrix AND track reads 
 #matrix. Only be run if any(rowSums(s) < 10000)
 rs10k <- function(s) {rs <- which(rowSums(s) < 10000); warning(
-  "Samples ", paste(names(rs), sep = ", "), "\nwill be removed due to sequenc",
-  "e depth < 10,000. See doi:10.1093/jas/skab346."); return(rs)}
+  "Samples ", toString(names(rs)), "\nwill be removed due to sequence depth <",
+  " 10,000. See doi:10.1093/jas/skab346."); return(rs)}
 #e.g., rs10k(st.bac)
 
 #rsSpecify function for debugging as a drop-in replacement for rs10k.
 #Added paste() to warning 23 June, 2025
 rsSpecify <- function(s, i) {i <- as.integer(i); if (!(is.integer(i))) stop(
   "i is not an integer"); rs <- which(rowSums(s) < i); warning(
-    "Samples\n", paste(names(rs)), "\nwill be removed due to arbitrary sequenc",
-    "e depth < ", i); return(rs)}
+    "Samples\n", toString(names(rs)), "\nwill be removed due to arbitrary sequ",
+    "ence depth < ", i); return(rs)}
 #e.g., rsSpecify(st.bac, 100000)
 
 #rt0 function takes a sequence count matrix s (no default) and returns an index 
@@ -436,18 +433,18 @@ mat_sum_repeat <- function (m = md, r = runs, FL = FileList, s = st.all) {
   tracks <- readRDS("results/seqtab/trackmult.rds"); if (all(rownames(
     tracks) != libvec)) stop("unable to match read-loss tracking to metadata")
   saveRDS(tracks, "results/TrackReads_lib.rds"); nfl <- names(FL)
-  lr <- length(r); if (nrow(s) > 1L) {cat(
-    "calculating shared variants. few shared variants can indicate technical", 
-    "problems such as inexact region amplification, incomplete primer removal,", 
-    "heterogeneity spacers and batch effects", fill = T); for (i in 1:lr) {
-      ss <- s[unlist(FL[which(nfl == as.character(r[i]))]), , drop = F]
-      if (nrow(ss) > 1L) {ss_shared <- ss; ss_shared[ss_shared > 0.1] <- 1
-      shared_vec <- which(colSums(ss_shared) >= 2); word <- "variant"
-      vct <- length(shared_vec); if (vct == 1L) {word <- word
-      } else {word <- paste0(word, "s")}; cat(paste0(round(sum(colSums(ss)[
-        shared_vec]) / sum(ss), 4) * 100, "%"), "of reads were in", vct, 
-        "shared", word, "among", nrow(ss), "samples within batch", r[i],
-        fill = T)}}} #shared variants across runs.
+  lr <- length(r); if (nrow(s) > 1L) {cat("Calculating shared variants!\n")
+  message("--Few shared variants can indicate technical problems such as inexac", 
+          "t region\namplification, incomplete primer removal, heterogeneity sp", 
+          "acers and batch\neffects.")
+  for (i in 1:lr) {ss <- s[unlist(FL[which(nfl == as.character(r[
+    i]))]), , drop = F]; if (nrow(ss) > 1L) {ss_shared <- ss; ss_shared[
+      ss_shared > 0.1] <- 1; shared_vec <- which(colSums(ss_shared) >= 2)
+      word <- "variant"; vct <- length(shared_vec); if (vct == 1L) {word <- word
+      } else {word <- paste0(word, "s")}; message("--", round(sum(colSums(ss)[
+        shared_vec]) / sum(ss), 4) * 100, " % of reads were in ", vct, 
+        "shared ", word, " among ", nrow(ss), " samples within batch ", r[i],
+        ".")}}}
   if (lr > 1) {combns <- combn(r, 2); for (i in 1:ncol(combns)) {
     j <- as.character(combn(r, 2)[1, i]); k <- as.character(combns[2, i])
     ssj <- s[unlist(FL[which(nfl == j)]), , drop = F]; ssk <- s[unlist(FL[which(
@@ -456,15 +453,15 @@ mat_sum_repeat <- function (m = md, r = runs, FL = FileList, s = st.all) {
       ssk_shared > 0.1] <- 1; shared_vec <- which(colSums(
         ssk_shared) >= 1 & colSums(ssj_shared) >= 1); word <- "variant"
     vct <- length(shared_vec); if (vct == 1L) {word <- word} else {
-      word <- paste0(word, "s")}; cat(paste0(round(sum(colSums(ssj)[
-      shared_vec]) / sum(ssj), 4) * 100, "%"), "of run", j, "reads and", paste0(
-        round(sum(colSums(ssk)[shared_vec]) / sum(ssk), 4) * 100, "%"), "of", 
-      "run", k, "reads are in", vct, "shared", word, "among batches", fill = T)}
+      word <- paste0(word, "s")}; message("--", round(sum(colSums(ssj)[
+      shared_vec]) / sum(ssj), 4) * 100, "% of run ", j, " reads and ", round(
+        sum(colSums(ssk)[shared_vec]) / sum(ssk), 4) * 100, "% of run ", k, "r",
+        "eads are in ", vct, " shared ", word, " among batches.")}
   } #combining repeats.
   if ("repeat." %in% colnames(m)) {suppressPackageStartupMessages(library(
     dplyr)); repeats_by_lib <- m %>% group_by(repeat.) %>%
       select(repeat., library) %>% group_nest()
-    message("summing counts for repeats"); sm <- matrix(nrow = nrow(
+    cat("Summing counts for repeats!\n"); sm <- matrix(nrow = nrow(
       repeats_by_lib), ncol = ncol(s), dimnames = list(
         repeats_by_lib$repeat., colnames(s))); tm <- matrix(nrow = nrow(
           repeats_by_lib), ncol = ncol(tracks), dimnames = list(
@@ -498,29 +495,28 @@ mat_sum_repeat <- function (m = md, r = runs, FL = FileList, s = st.all) {
 #bn reports decimals of total counts for schim, relative to st.mr
 Bn <- function(s = st.mr) {seed <- 100; multithread_val = T
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
-message("Removing chimeric sequences with the dada2 consensus method")
-beg_time <- Sys.time(); cat("removeBimeraDenovo started\n")
-schim <- removeBimeraDenovo(
+cat("Removing chimeric sequences with the dada2 consensus method!\n")
+beg_time <- Sys.time(); schim <- removeBimeraDenovo(
   s, method = "consensus", multithread = multithread_val); tm <- readRDS(
     "results/seqtab/tm.rds"); tm <- cbind(tm, rowSums(schim)); colnames(
       tm)[7] <- "nonchim"; if (any(rowSums(schim) < 10000)) {
         rr <- rs10k(schim); schim <- schim[-rr, ]; tm <- tm[-rr, ]
   if (any(colSums(schim) == 0)) {rc <- rt0(schim); schim <- schim[, -rc]}
   #made this explicit like in mat_sum_repeat on 11Apr25
-        name_compare2(s = schim, t = tm)}; saveRDS(tm, "results/seqtab/tm.rds")
+  name_compare2(s = schim, t = tm)}; saveRDS(tm, "results/seqtab/tm.rds")
 end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours")
-cat("removeBimeraDenovo completed in", paste0(elapsed_time, ".  ", round(sum(
-  schim)/sum(st.mr) * 100, 2), "% of merged sequence reads and ", round(dim(
-    schim)[2] / dim(st.mr)[2] * 100, 2), "%"), "of merged sequence variants",
-  "remain in the sequence table with chimeras removed. Most of your reads",
-  "should remain after chimera removal (it is not uncommon for a majority of",
-  "sequence variants to be removed though). If most of your reads were",
-  "removed as chimeric, upstream processing may need to be revisited. In",
-  "almost all cases this is caused by unremoved primers interfering with",
-  "chimera identification. forwardtrimLeft and reversetrimLeft are the PEIV13",
-  "controlfile primer removing parameters for R1 and R2 raw reads respectively."
-   , fill = T); return(schim)}
+cat("Chimera removal completed in", paste0(elapsed_time, "!\n")); message(
+  "--", round(sum(schim)/sum(st.mr) * 100, 2), "% of merged sequence reads and",
+  " " round(dim(schim)[2] / dim(st.mr)[2] * 100, 2), "% of merged sequence var",
+  "iants remain\nin the sequence table with chimeras removed.  Most of your re",
+  "ads should remain\nafter chimera removal (it is not uncommon for a majority",
+  " of sequence variants to\nbe removed though).  If most of your reads were r",
+  "emoved as chimeric, upstream\nprocessing may need to be revisited.  In almo",
+  "st all cases this is caused by\nunremoved primers interfering with chimera ",
+  "identification.  PEIV13 controlfile\nprimer removing parameters for R1 and ",
+  "R2 raw reads are forwardtrimLeft and\nreversetrimLeft respectively.")
+return(schim)}
 #e.g., Bn()
 
 #aT function takes PEIV13 sequence table matrix default = st.chim and a PEIV13
@@ -528,18 +524,19 @@ cat("removeBimeraDenovo completed in", paste0(elapsed_time, ".  ", round(sum(
 aT <- function(s = st.chim, uv = uservars) {d <- pattern2string("databasefile")
 trc <- as.logical(pattern2string("tryRC")); seed <- 100; multithread_val = T
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
-beg_time <- Sys.time(); cat("assignTaxonomy started\n"); taxa <- assignTaxonomy(
-  s, d, multithread = multithread_val, tryRC = trc); end_time_h <- Sys.time()
-elapsed_time <- paste0(round(as.numeric(difftime(
+beg_time <- Sys.time(); cat("Taxonomy assignment started!\n")
+taxa <- assignTaxonomy(s, d, multithread = multithread_val, tryRC = trc)
+end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours"); cat(
-    "assignTaxonomy completed in", paste0(elapsed_time, ".\nKingdom"),
+    "Taxonomy assignment completed in", paste0(elapsed_time, "!\nKingdom"),
     "summary:\n"); print(table(taxa[, 1], useNA = "ifany")); return(taxa)}
 #e.g., aT()
 
 #rmBac function takes PEIV13 sequence table (default st.chim) and otu table
 #default(taxa) and returns a new bacteria only sequence table
 rmBac <- function(s = st.chim, t = taxa) {suppressPackageStartupMessages(
-  library(data.table)) #https://stackoverflow.com/questions/58327399/negate-like-in-data-table-package-r/58327444#58327444
+  library(data.table)) 
+  #https://stackoverflow.com/questions/58327399/negate-like-in-data-table-package-r/58327444#58327444
   #for negating. t[!, 1] %ilike% "Bacteria" failed to load via source() with 
   #error. a notilike function worked
   `%notilike%` <- Negate(`%ilike%`); message("Removing ", length(which(t[
@@ -561,33 +558,33 @@ rmBac2 <- function(sbac = st.bac, schim = st.chim, tax = taxa) {
       trm, "results/seqtab/tm.rds"); taxareadloss <- (sum(schim) - sum(
         sbac)) / sum(schim)
     if (taxareadloss > 0.5) warning(
-      "Your reads do not seem to be appropriately assigned!\n Check for lots o",
-      "f 16S sequences assigned as Kingdom Eukaryota NA NA NA rather than Bact",
-      "eria.\nYour reads may be in the opposite orientation as the reference d",
-      "atabase.\nUse a different PEIV13 parameter tryRC and see if this fixes ",
-      "the assignments."); cat(paste0(round(
-        taxareadloss, 4) * 100, "% of reads removed as non Bacteria\n"))
-    message("Saving final TrackReads file"); saveRDS(
+      "Your reads do not seem to be appropriately assigned!\nCheck for lots of",
+      " 16S sequences assigned as Kingdom Eukaryota NA NA NA rather\nthan Bact",
+      "eria.  Your reads may be in the opposite orientation as the reference\n",
+      "database.  Use a different PEIV13 parameter tryRC and see if this fixes",
+      "the\nassignments."); cat(paste0(round(
+        taxareadloss, 4) * 100, "% of reads removed as non Bacteria!\n"))
+    cat("Saving final TrackReads file"); saveRDS(
       trm, "results/TrackReads_rep.rds"); pkg <- "package:data.table"; detach(
         pkg, character.only = T); return(taxbac)}
 #e.g., rmBac2()
 							    
 #make_ps function takes PEIV13 metadata, sequence table, and taxa and saves a
 #phyloseq rds
-make_ps <- function(m = md, s = st.bac, t = taxa.bac) {message(
-  "Making phyloseq object from metadata, sequence table and taxonomy table")
+make_ps <- function(m = md, s = st.bac, t = taxa.bac) {cat(
+  "Making phyloseq object from metadata, sequence table and taxonomy table!\n")
   if ("repeat." %in% colnames(m)) {samdf <- m[, -which(colnames(
     m) == "library")]; samdf <- samdf[!duplicated(samdf$repeat.), ]; rownames(
-      samdf) <- samdf$repeat.} else {samdf <- m; rownames(
-        samdf) <- samdf$library}; library(phyloseq); ps <- phyloseq(otu_table(
-          s, taxa_are_rows = F), sample_data(samdf), tax_table(t)); saveRDS(
-            ps, "results/ps.rds"); pkg <- "package:phyloseq"; detach(
-              pkg, character.only = T)}
+      samdf) <- samdf$repeat.} else {samdf <- m
+  rownames(samdf) <- samdf$library}; library(phyloseq); ps <- phyloseq(
+    otu_table(s, taxa_are_rows = F), sample_data(samdf), tax_table(t))
+  saveRDS(ps, "results/ps.rds"); pkg <- "package:phyloseq"; detach(
+    pkg, character.only = T)}
 #e.g., make_ps()
 
 #rm_peiv13_int function cleans up intermediate files.
 rm_peiv13_int <- function() {f <- list.files("results/seqtab", "rds")
-message("Removing intermediate files"); for (i in 1:length(f)) unlink(file.path(
+cat("Removing intermediate files!\n"); for (i in 1:length(f)) unlink(file.path(
   "results/seqtab", f[i]), force = T); f <- list.files("results/seqtab", "rds")
 if (length(f) > 0) stop("failed to remove intermediate files"); unlink(
   "results/filt", recursive = T, force = T); if (dir.exists(
