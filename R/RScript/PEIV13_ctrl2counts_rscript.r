@@ -20,7 +20,7 @@ checkfs(); checkenv() #check files/folders & packages
 
 #get & order metadata md. check assignTaxonomy files/parameters. set up results
 check_taxdb()
-cat("first check of metadata after comparing file names against library\n")
+cat("Checking metadata after comparing file names against library!\n")
 md <- read.csv(pattern2string("metadatafile"), tryLogical = F); check_mdat()
 md <- md[with(md, order(as.character(run), as.character(library) )), ]
 setup_peiv13_results()
@@ -40,7 +40,7 @@ forwardtrunc <- dada2var_from_ctrl("forwardtrunc")
 reversetrunc <- dada2var_from_ctrl("reversetrunc")
 forwardtrimLeft <- dada2var_from_ctrl("forwardtrimLeft")
 reversetrimLeft <- dada2var_from_ctrl("reversetrimLeft")
-runs <- unique(md[, "run"]); cat(length(runs), "runs found in metadata\n")
+runs <- unique(md[, "run"]); cat(length(runs), "runs found in metadata!\n")
 
 #check environment variables (allow for optional raw2seqtab variables)
 pl <- as.character(pattern2string("pool")); if (length(pl) > 0) {
@@ -67,7 +67,7 @@ st.chim <- Bn(); taxa <- aT() #remove chimeras, assign taxonomy
 st.bac <- rmBac(); taxa.bac <- rmBac2()
 
 #save files (written as rds not csv for container version 1.1)
-message("Writing sequence table and taxonomy table")
+cat("Writing sequence table and taxonomy table!\n")
 saveRDS(st.bac, "results/SequenceTable.rds")
 saveRDS(taxa.bac, "results/TaxaTable.rds")
 
