@@ -40,7 +40,9 @@ forwardtrunc <- dada2var_from_ctrl("forwardtrunc")
 reversetrunc <- dada2var_from_ctrl("reversetrunc")
 forwardtrimLeft <- dada2var_from_ctrl("forwardtrimLeft")
 reversetrimLeft <- dada2var_from_ctrl("reversetrimLeft")
-runs <- unique(md[, "run"]); cat(length(runs), "runs found in metadata!\n")
+runs <- unique(md[, "run"]); word <- "run"; vct <- length(runs)
+if (vct == 1L) {word <- word} else {word <- paste0(word, "s")}
+message("--", vct, " ", word, " found in metadata.--")
 
 #check environment variables (allow for optional raw2seqtab variables)
 pl <- as.character(pattern2string("pool")); if (length(pl) > 0) {
@@ -53,7 +55,7 @@ FileList <- split(md["library"], md[, "run"]); suppressPackageStartupMessages(
   library(dada2))
 
 #run dada2 on each run (optional variable aware)
-if (exists('pl')) {for (r in runs) {raw2seqtab()} 
+if (exists('pl')) {for (r in runs) {raw2seqtab(plv = pl)} 
 } else {for (r in runs) {raw2seqtab()}}
 
 st.all <- multiseqtab() #merge sequence tables
