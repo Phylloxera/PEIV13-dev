@@ -203,7 +203,7 @@ PEIV13varcheck <- function() {if (is.integer(reversetrimLeft) == F) stop(
     "iable\nregion 1-3 data.  Error plots will be in\nresults/plotErrors/<dire",
     "ction>_<batch>.pdf showing the error rates for each\npossible transition ",
     "(A→C, A→G, ...).  Points are the observed error rates for\neach consensus",
-    " quality score.\nThe black line shows the estimated error rates\nafter co",
+    " quality score.  The black line shows the estimated error rates\nafter co",
     "nvergence of the machine-learning algorithm and the red line shows the\ne",
     "rror rates expected under the nominal definition of the Q-score.  If the",
     "\nestimated error rates (black line) are a good fit to the observed rates",
