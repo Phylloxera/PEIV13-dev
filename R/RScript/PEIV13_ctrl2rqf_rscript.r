@@ -3,6 +3,8 @@
 #The PEIV13_ctrl2rqf_rscript.R Rscript file. can be run via 
 #system() in RStudio or via Rscript. Possibly inside container.
 
+beg_time <- Sys.time();cat("Running pqp!\n") #Rscript time accounting
+
 #commandArgs() test
 if (length(commandArgs(trailingOnly = T)) != 1) {
   stop("This script requires a controlfile argument; exiting", call. = F)}
@@ -46,5 +48,9 @@ FileList <- split(md["library"], md[, "run"]); suppressPackageStartupMessages(
 #create and save read quality profiles for each run in loop.
 for (r in runs) {raw2pQP()}
 
-#unload dada2
-pkg <- "package:dada2"; detach(pkg, character.only = T)
+pkg <- "package:dada2"; detach(pkg, character.only = T) #unload dada2
+
+#Rscript time accounting
+end_time_m <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
+  time1 = end_time_m, time2 = beg_time, units = "mins")), 2), " Minutes")
+cat("pqp completed in", paste0(elapsed_time, "!\n"))
