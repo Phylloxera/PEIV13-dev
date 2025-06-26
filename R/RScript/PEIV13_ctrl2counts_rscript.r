@@ -3,6 +3,8 @@
 #The PEIV13_ctrl2counts_rscript.R Rscript file. Tested via system() in RStudio, 
 #inside of the peiv13cont apptainer container, and via Rscript
 
+beg_time <- Sys.time();cat("Running c2c!\n") #Rscript time accounting
+
 #commandArgs() test
 if (length(commandArgs(trailingOnly = T)) != 1) {
   stop("This script requires a controlfile argument; exiting", call. = F)}
@@ -78,3 +80,8 @@ make_ps() #make a phyloseq (tree-less) and save
 pkg <- "package:dada2"; detach(pkg, character.only = T) #unload dada2
 
 rm_peiv13_int() #cleanup intermediate files/folders
+
+#Rscript time accounting
+end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
+  time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours")
+cat("c2c completed in", paste0(elapsed_time, "!\n"))
