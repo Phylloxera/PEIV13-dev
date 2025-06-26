@@ -272,7 +272,7 @@ out <- filterAndTrim(Fs, filtFs, Rs, filtRs, truncLen = truncspec, trimLeft = c(
   rm.phix = T, compress = T, multithread = multithread_val)
 end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours")
-cat("filterAndTrim for run", r, "completed in", paste0(elapsed_time, "\n"))
+cat("filterAndTrim for run", r, "completed in", paste0(elapsed_time, "!\n"))
 cat("Learning errors for run", paste0(r, "!\n")); beg_time <- Sys.time()
 #learnErrors()
 errF <- learnErrors(
