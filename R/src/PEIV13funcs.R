@@ -316,7 +316,7 @@ cat("Making sequence table and initiating read-loss tracking for run", paste0(
   r, "!\n")) #makeSequenceTable()
 beg_time <- Sys.time(); seqtab <- makeSequenceTable(mergers); ct_filt400 <- sum(
   nchar(colnames(seqtab)) < 400); if (ct_filt400 > 0) {message(
-    "--Removing ", ct_filt400, " variants shorter than 400.  See doi:10.1371/",
+    "--Removing ", ct_filt400, " variants shorter than 400.\nSee doi:10.1371/",
     "journal.pone.0129174.--")}; seqtab <- seqtab[, nchar(colnames(
       seqtab)) > 399, drop = F]
 hist <- hist(nchar(getSequences(seqtab)), plot = F); hist[["xname"]] <- paste0(
@@ -365,7 +365,7 @@ rownames(track) <- s; rownames(seqtab) <- s; saveRDS(seqtab, paste0(
 elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_s, time2 = beg_time, units = "secs")), 2), " Seconds"); cat(
     "sequence table and initial read-loss tracking for run", r, "completed in",
-    paste0(elapsed_time, "!\n"), fill = T)}
+    paste0(elapsed_time, "!"), fill = T)}
 #e.g., raw2seqtab(plv = "pseudo")
 
 #the multiseqtab() function. binds multiple seqtabs.
@@ -456,8 +456,8 @@ mat_sum_repeat <- function (m = md, r = runs, FL = FileList, s = st.all) {
     vct <- length(shared_vec); if (vct == 1L) {word <- word} else {
       word <- paste0(word, "s")}; message("--", round(sum(colSums(ssj)[
       shared_vec]) / sum(ssj), 4) * 100, "% of run ", j, " reads and ", round(
-        sum(colSums(ssk)[shared_vec]) / sum(ssk), 4) * 100, "% of run ", k, "r",
-        "eads are in ", vct, " shared ", word, "\namong batches.--")}
+        sum(colSums(ssk)[shared_vec]) / sum(ssk), 4) * 100, "% of run ", k, " ",
+        "reads are in ", vct, " shared ", word, "\namong batches.--")}
   } #combining repeats.
   if ("repeat." %in% colnames(m)) {suppressPackageStartupMessages(library(
     dplyr)); repeats_by_lib <- m %>% group_by(repeat.) %>%
