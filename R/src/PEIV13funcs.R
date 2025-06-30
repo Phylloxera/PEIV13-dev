@@ -16,9 +16,11 @@ pattern2string <- function(pattern, uv = uservars) {
 #checkfs takes uv (default uservars) and performs confirms existence of inputs
 checkfs <- function(uv = uservars) {mf <- pattern2string("metadatafile")
 if (!file.exists(mf)) stop(mf, ",\nnot found"); rawfol <- pattern2string(
-  "inputfolder"); if (!dir.exists(rawfol)) stop(rawfol, ",\nnot found")
-dbf <- pattern2string("databasefile"); if (!file.exists(dbf)) stop(
-  dbf, ",\nnot found")}
+  "inputfolder"); if (!dir.exists(rawfol)) {stop(rawfol, ",\nnot found")
+  } else {cat(
+    "PEIV13 will use the compressed, paired-end raw fastq files in", paste0(
+      "\n", rawfol, "!\n"))}; dbf <- pattern2string("databasefile"); if (
+        !file.exists(dbf)) stop(dbf, ",\nnot found")}
   #never reproduced or found source of env: Rscript\r: No such file or directory
 #e.g., checkfs()
 
@@ -266,7 +268,11 @@ Fs <- unique(batch_ilike_subset_vec(fnF, s))
 Rs <- unique(batch_ilike_subset_vec(fnR, s))
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
 #filterAndTrim()
-beg_time <- Sys.time(); cat("Starting filterAndTrim for run", paste0(r, "!\n"))
+beg_time <- Sys.time(); cat(
+  "Starting filterAndTrim for run", r, "with R1 and R2 truncLen parameters,",
+  truncspec[1], "and\n", truncspec[2], "and R1 and R2 trimLeft parameters,", ftl,
+  "and", rtl, "and R1 and R2 maxEE\nparameters,", maxEE_val[1], "and",
+  maxEE_val[2], "and multithread", paste0(multithread_val, "!\n"))
 out <- filterAndTrim(Fs, filtFs, Rs, filtRs, truncLen = truncspec, trimLeft = c(
   ftl, rtl), maxN = maxN_val, maxEE = maxEE_val, truncQ = truncQ_val, 
   rm.phix = T, compress = T, multithread = multithread_val)
@@ -525,9 +531,11 @@ return(schim)}
 aT <- function(s = st.chim, uv = uservars) {d <- pattern2string("databasefile")
 trc <- as.logical(pattern2string("tryRC")); seed <- 100; multithread_val = T
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
-beg_time <- Sys.time(); cat("Taxonomy assignment started!\n")
-taxa <- assignTaxonomy(s, d, multithread = multithread_val, tryRC = trc)
-end_time_h <- Sys.time(); elapsed_time <- paste0(round(as.numeric(difftime(
+beg_time <- Sys.time(); cat(
+  "Taxonomy assignment started with database file\n", d, "\nand tryRC",
+  "parameter,", paste0(trc, "!\n")); taxa <- assignTaxonomy(
+    s, d, multithread = multithread_val, tryRC = trc); end_time_h <- Sys.time()
+elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours"); cat(
     "Taxonomy assignment completed in", paste0(elapsed_time, "!\nKingdom"),
     "summary:"); print(table(taxa[, 1], useNA = "ifany")); return(taxa)}
@@ -565,7 +573,7 @@ rmBac2 <- function(sbac = st.bac, schim = st.chim, tax = taxa) {
       "database.  Use a different PEIV13 parameter tryRC and see if this fixes",
       "the\nassignments."); message("--", round(
         taxareadloss, 4) * 100, "% of reads removed as non Bacteria.--")
-    cat("Saving final TrackReads file"); saveRDS(
+    cat("Saving final TrackReads file!\n"); saveRDS(
       trm, "results/TrackReads_rep.rds"); pkg <- "package:data.table"; detach(
         pkg, character.only = T); return(taxbac)}
 #e.g., rmBac2()
