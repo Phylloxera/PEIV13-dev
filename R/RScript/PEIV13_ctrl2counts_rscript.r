@@ -25,7 +25,7 @@ check_taxdb()
 cat("Checking metadata after comparing file names against library!\n")
 md <- read.csv(pattern2string("metadatafile"), tryLogical = F); check_mdat()
 md <- md[with(md, order(as.character(run), as.character(library) )), ]
-setup_peiv13_results()
+setup_peiv13_results(); saveRDS(md, "results/metadata1.rds")
 
 #define R1, R2, refine R1, R2 & md, samples and test
 fns <- sort(list.files(pattern2string("inputfolder"), full.names = T, 
@@ -33,7 +33,12 @@ fns <- sort(list.files(pattern2string("inputfolder"), full.names = T,
 fnRs <- fns[grepl("R2", fns)]; fnFs <- unique(batch_ilike_subset_vec(fnFs, md[
   , "library"])); fnRs <- unique(batch_ilike_subset_vec(fnRs, md[, "library"]))
 
-md <- subset_md() #subset md
+#subset and save final metadata file
+md <- subset_md(); cat("Saving final metadata file!\n"); saveRDS(
+  md, "results/metadata2.rds"); f <- list.files(
+    "results", "metadata", full.names = T); if (nrow(readRDS(f[1])) == nrow(
+      readRDS(f[2]))) {unlink(f[1]); file.rename(f[2], "results/metadata.rds")
+      if (file.exists(f[1])) stop("failed to remove intermediate files")}
 
 #extract trunc,maxerror,trimLeft,run variables from uservars
 varMessages(); forwardmaxerror <- dada2var_from_ctrl("forwardmaxerror")
