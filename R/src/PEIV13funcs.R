@@ -270,9 +270,9 @@ if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
 #filterAndTrim()
 beg_time <- Sys.time(); cat(
   "Starting filterAndTrim for run", r, "with R1 and R2 truncLen parameters,",
-  truncspec[1], "and\n", truncspec[2], "and R1 and R2 trimLeft parameters,", ftl,
-  "and", rtl, "and R1 and R2 maxEE\nparameters,", maxEE_val[1], "and",
-  maxEE_val[2], "and multithread", paste0(multithread_val, "!\n"))
+  truncspec[1], paste0("and\n", truncspec[2]), "and R1 and R2 trimLeft",
+  "parameters,", ftl, "and", rtl, "and R1 and R2 maxEE\nparameters,", maxEE_val[
+    1], "and", maxEE_val[2], "and multithread", paste0(multithread_val, "!\n"))
 out <- filterAndTrim(Fs, filtFs, Rs, filtRs, truncLen = truncspec, trimLeft = c(
   ftl, rtl), maxN = maxN_val, maxEE = maxEE_val, truncQ = truncQ_val, 
   rm.phix = T, compress = T, multithread = multithread_val)
@@ -532,8 +532,8 @@ aT <- function(s = st.chim, uv = uservars) {d <- pattern2string("databasefile")
 trc <- as.logical(pattern2string("tryRC")); seed <- 100; multithread_val = T
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
 beg_time <- Sys.time(); cat(
-  "Taxonomy assignment started with database file\n", d, "\nand tryRC",
-  "parameter,", paste0(trc, "!\n")); taxa <- assignTaxonomy(
+  "Taxonomy assignment started with database file", paste0("\n, d, "\nand"),
+  "tryRC parameter,", paste0(trc, "!\n")); taxa <- assignTaxonomy(
     s, d, multithread = multithread_val, tryRC = trc); end_time_h <- Sys.time()
 elapsed_time <- paste0(round(as.numeric(difftime(
   time1 = end_time_h, time2 = beg_time, units = "hours")), 2), " Hours"); cat(
