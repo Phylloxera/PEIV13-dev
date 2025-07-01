@@ -532,7 +532,7 @@ aT <- function(s = st.chim, uv = uservars) {d <- pattern2string("databasefile")
 trc <- as.logical(pattern2string("tryRC")); seed <- 100; multithread_val = T
 if (.Platform$OS.type == "windows") multithread_val = F; set.seed(seed)
 beg_time <- Sys.time(); cat(
-  "Taxonomy assignment started with database file", paste0("\n, d, "\nand"),
+  "Taxonomy assignment started with database file", paste0("\n", d, "\nand"),
   "tryRC parameter,", paste0(trc, "!\n")); taxa <- assignTaxonomy(
     s, d, multithread = multithread_val, tryRC = trc); end_time_h <- Sys.time()
 elapsed_time <- paste0(round(as.numeric(difftime(
